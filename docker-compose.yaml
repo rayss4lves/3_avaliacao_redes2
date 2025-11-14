@@ -1,0 +1,45 @@
+version: '3.9'
+services:
+  servidor-sincrono:
+    build: 
+      context: ./src/servidor_sincrono
+      dockerfile: dockerfile.sincrono
+    container_name: servidor_sincrono
+    networks:
+      redes:
+        ipv4_address: 95.58.0.2
+    ports:
+      - "8080:80"
+
+  servidor-assincrono:
+    build:
+      context: ./src/servidor_assincrono
+      dockerfile: dockerfile.assincrono
+    container_name: servidor-assincrono
+    networks:
+      redes:
+        ipv4_address: 95.58.0.3
+    ports:
+      - "8081:80"
+
+  client:
+    build: 
+      context: ./src/cliente
+      dockerfile: dockerfile.cliente
+    container_name: cliente
+    depends_on:
+      - servidor-sincrono
+      - servidor-assincrono
+    volumes:  
+      - ./graficos:/graficos
+      - ./src/cliente:/app
+    networks:
+      redes:
+        ipv4_address: 95.58.0.4
+
+networks:
+  redes:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 95.58.0.0/24

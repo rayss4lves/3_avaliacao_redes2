@@ -1,0 +1,12 @@
+FROM httpd:ubuntu
+
+WORKDIR /app
+
+COPY ServidorApache.py /app/ServidorApache.py
+
+# Copia configuração customizada
+COPY httpd.conf /usr/local/apache2/conf/httpd.conf
+
+EXPOSE 80
+
+CMD ["python3", "/app/ServidorApache.py"]

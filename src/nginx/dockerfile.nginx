@@ -1,0 +1,11 @@
+FROM nginx:3.11-alpine
+
+WORKDIR /app
+
+COPY ServidorNginx.py /app/ServidorNginx.py
+
+COPY html /app/html/
+# Expõe a porta 80
+EXPOSE 80
+
+CMD ["python3", "/app/ServidorNginx.py"]

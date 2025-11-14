@@ -1,0 +1,53 @@
+listen 5
+
+cliente  | ======================ESTATISTICAS DO SERVIDOR SINCRONO======================
+cliente  | ================================= RESULTADOS DAS ESTATiSTICAS =================================
+cliente  |   Tempo_Total............................. Média:       0.06 | Desvio:       0.01
+cliente  |   Tempo_Medio_Resposta.................... Média:       0.00 | Desvio:       0.00
+cliente  |   Throughput.............................. Média:     832.26 | Desvio:     148.39
+cliente  |   Requisicões Bem Sucedidas............... Média:      50.00 | Desvio:       0.00
+cliente  |   Falhas.................................. Média:       0.00 | Desvio:       0.00
+cliente  | ======================ESTATISTICAS DO SERVIDOR ASSINCRONO======================
+cliente  | ================================= RESULTADOS DAS ESTATiSTICAS =================================
+cliente  |   Tempo_Total............................. Média:       1.21 | Desvio:       0.07
+cliente  |   Tempo_Medio_Resposta.................... Média:       0.01 | Desvio:       0.00
+cliente  |   Throughput.............................. Média:     415.84 | Desvio:      25.25
+cliente  |   Requisicões Bem Sucedidas............... Média:     500.00 | Desvio:       0.00
+cliente  |   Falhas.................................. Média:       0.00 | Desvio:       0.00
+cliente exited with code 0
+
+listen 7
+
+cliente  | ======================ESTATISTICAS DO SERVIDOR SINCRONO======================
+cliente  | ================================= RESULTADOS DAS ESTATiSTICAS =================================
+cliente  |   Tempo_Total............................. Média:       0.07 | Desvio:       0.02
+cliente  |   Tempo_Medio_Resposta.................... Média:       0.00 | Desvio:       0.00
+cliente  |   Throughput.............................. Média:     870.42 | Desvio:     432.13
+cliente  |   Requisicões Bem Sucedidas............... Média:      50.00 | Desvio:       0.00
+cliente  |   Falhas.................................. Média:       0.00 | Desvio:       0.00
+cliente  | ======================ESTATISTICAS DO SERVIDOR ASSINCRONO======================
+cliente  | ================================= RESULTADOS DAS ESTATiSTICAS =================================
+cliente  |   Tempo_Total............................. Média:       1.16 | Desvio:       0.13
+cliente  |   Tempo_Medio_Resposta.................... Média:       0.01 | Desvio:       0.00
+cliente  |   Throughput.............................. Média:     436.14 | Desvio:      53.94
+cliente  |   Requisicões Bem Sucedidas............... Média:     500.00 | Desvio:       0.00
+cliente  |   Falhas.................................. Média:       0.00 | Desvio:       0.00
+cliente exited with code 0
+
+listen 10 
+
+cliente  | ======================ESTATISTICAS DO SERVIDOR SINCRONO======================
+cliente  | ================================= RESULTADOS DAS ESTATiSTICAS =================================
+cliente  |   Tempo_Total............................. Média:       0.07 | Desvio:       0.02
+cliente  |   Tempo_Medio_Resposta.................... Média:       0.00 | Desvio:       0.00
+cliente  |   Throughput.............................. Média:     807.54 | Desvio:     261.87
+cliente  |   Requisicões Bem Sucedidas............... Média:      50.00 | Desvio:       0.00
+cliente  |   Falhas.................................. Média:       0.00 | Desvio:       0.00
+cliente  | ======================ESTATISTICAS DO SERVIDOR ASSINCRONO======================
+cliente  | ================================= RESULTADOS DAS ESTATiSTICAS =================================
+cliente  |   Tempo_Total............................. Média:       0.49 | Desvio:       0.03
+cliente  |   Tempo_Medio_Resposta.................... Média:       0.01 | Desvio:       0.00
+cliente  |   Throughput.............................. Média:    1025.81 | Desvio:      54.61
+cliente  |   Requisicões Bem Sucedidas............... Média:     500.00 | Desvio:       0.00
+cliente  |   Falhas.................................. Média:       0.00 | Desvio:       0.00
+cliente exited with code 0

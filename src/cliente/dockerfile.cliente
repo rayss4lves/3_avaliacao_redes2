@@ -1,0 +1,20 @@
+FROM ubuntu:latest
+# Define o diretorio de trabalho dentro do conteiner
+WORKDIR /app
+
+# Instala as dependencias
+RUN apt-get update && apt-get install -y \
+    iputils-ping \
+    net-tools \
+    python3 \
+    python3-pip \
+    python3-matplotlib \
+    python3-numpy \
+    python3-pandas \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copia o restante do codigo da aplicacao
+COPY . /app
+
+# Comandos para iniciar o cliente e executar os testes e gerar resultados
+CMD bash -c "python3 cliente.py && python3 testes.py && python3 resultados.py"
