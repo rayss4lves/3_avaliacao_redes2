@@ -17,4 +17,4 @@ RUN apt-get update && apt-get install -y \
 COPY . /app
 
 # Comandos para iniciar o cliente e executar os testes e gerar resultados
-CMD bash -c "python3 cliente.py && python3 testes.py && python3 resultados.py"
+CMD ["python3", "carga.py"]
