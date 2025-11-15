@@ -12,6 +12,3 @@ COPY httpd.conf /usr/local/apache2/conf/httpd.conf
 
 # Expõe a porta padrão do Apache
 EXPOSE 80
-
-# O CMD já é definido pela imagem oficial (httpd -DFOREGROUND),
-# então não precisa sobrescrever.

@@ -18,3 +18,10 @@ scrape_configs:
         labels:
           servidor: 'nginx'
           tipo: 'servidor_web'
+          
+  - job_name: 'apache'
+    static_configs:
+      - targets: ['95.58.0.8:9117']
+        labels:
+          servidor: 'apache'
+          tipo: 'servidor_web'

@@ -29,32 +29,33 @@ services:
     depends_on:
       - nginx
 
-  # apache:
-  #   build:
-  #     context: ./src/apache
-  #     dockerfile: dockerfile.apache
-  #   container_name: apache_server
-  #   networks:
-  #     redes:
-  #       ipv4_address: 95.58.0.6
-  #   ports:
-  #     - "8082:80"
-  #   volumes:
-  #     - ./src/apache/html:/app/html:ro
-  #     - ./src/apache/ServidorApache.py:/app/ServidorApache.py:ro
+  apache:
+    build:
+      context: ./src/apache
+      dockerfile: dockerfile.apache
+    container_name: apache_server
+    networks:
+      redes:
+        ipv4_address: 95.58.0.6
+    ports:
+      - "8082:80"
+    volumes:
+      - ./src/apache/html:/usr/share/apache2/html:ro
+      - ./src/apache/httpd.conf:/etc/apache2/apache2.conf:ro
+    
   
-  # apache-exporter:
-  #   image: lusotycoon/apache-exporter:latest
-  #   container_name: apache_exporter
-  #   networks:
-  #     redes:
-  #       ipv4_address: 95.58.0.8
-  #   ports:
-  #     - "9117:9117"
-  #   command:
-  #     - '--scrape_uri=http://95.58.0.6/server-status?auto'
-  #   depends_on:
-  #     - apache
+  apache-exporter:
+    image: lusotycoon/apache-exporter:latest
+    container_name: apache_exporter
+    networks:
+      redes:
+        ipv4_address: 95.58.0.8
+    ports:
+      - "9117:9117"
+    command:
+      - '--scrape_uri=http://95.58.0.6/apache-status?auto'
+    depends_on:
+      - apache
 
   prometheus:
     image: prom/prometheus:latest
@@ -68,6 +69,7 @@ services:
       - "9090:9090"
     depends_on:
       - nginx-exporter
+      - apache-exporter
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.retention.time=30d'
