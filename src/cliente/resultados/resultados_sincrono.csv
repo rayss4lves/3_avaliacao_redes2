@@ -1,0 +1,6 @@
+timestamp,servidor,cenario,metrica,media,desvio_padrao
+2025-11-14 02:45:28,sincrono,GET - /,Tempo_Total,114.69723725318909,0.11123411591413805
+2025-11-14 02:45:28,sincrono,GET - /,Tempo_Medio_Resposta,0.0,0.0
+2025-11-14 02:45:28,sincrono,GET - /,Throughput,0.0,0.0
+2025-11-14 02:45:28,sincrono,GET - /,Requisicões Bem Sucedidas,0.0,0.0
+2025-11-14 02:45:28,sincrono,GET - /,Falhas,50.0,0.0

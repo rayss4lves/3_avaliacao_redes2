@@ -1,12 +1,17 @@
-FROM httpd:ubuntu
+# Usa a imagem oficial do Apache
+FROM httpd:latest
 
-WORKDIR /app
+# Define diretório de trabalho
+WORKDIR /usr/local/apache2
 
-COPY ServidorApache.py /app/ServidorApache.py
+# Copia os arquivos HTML para o DocumentRoot
+COPY html/ /usr/local/apache2/htdocs/
 
-# Copia configuração customizada
+# Copia configuração customizada do Apache
 COPY httpd.conf /usr/local/apache2/conf/httpd.conf
 
+# Expõe a porta padrão do Apache
 EXPOSE 80
 
-CMD ["python3", "/app/ServidorApache.py"]
+# O CMD já é definido pela imagem oficial (httpd -DFOREGROUND),
+# então não precisa sobrescrever.

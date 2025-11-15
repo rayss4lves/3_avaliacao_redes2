@@ -1,41 +1,111 @@
 version: '3.9'
 services:
-  servidor-sincrono:
-    build: 
-      context: ./src/servidor_sincrono
-      dockerfile: dockerfile.sincrono
-    container_name: servidor_sincrono
+  nginx:
+    build:
+      context: ./src/nginx
+      dockerfile: dockerfile.nginx
+    container_name: nginx
+    networks:
+      redes:
+        ipv4_address: 95.58.0.5
+    ports:
+      - "8080:80"
+
+    volumes:
+      - ./src/nginx/html:/usr/share/nginx/html:ro
+      - ./src/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+
+  
+  nginx-exporter:
+    image: nginx/nginx-prometheus-exporter:latest
+    container_name: nginx_exporter
+    networks:
+      redes:
+        ipv4_address: 95.58.0.7
+    ports:
+      - "9113:9113"
+    command:
+      - '-nginx.scrape-uri=http://95.58.0.5/basic_status'
+    depends_on:
+      - nginx
+
+  # apache:
+  #   build:
+  #     context: ./src/apache
+  #     dockerfile: dockerfile.apache
+  #   container_name: apache_server
+  #   networks:
+  #     redes:
+  #       ipv4_address: 95.58.0.6
+  #   ports:
+  #     - "8082:80"
+  #   volumes:
+  #     - ./src/apache/html:/app/html:ro
+  #     - ./src/apache/ServidorApache.py:/app/ServidorApache.py:ro
+  
+  # apache-exporter:
+  #   image: lusotycoon/apache-exporter:latest
+  #   container_name: apache_exporter
+  #   networks:
+  #     redes:
+  #       ipv4_address: 95.58.0.8
+  #   ports:
+  #     - "9117:9117"
+  #   command:
+  #     - '--scrape_uri=http://95.58.0.6/server-status?auto'
+  #   depends_on:
+  #     - apache
+
+  prometheus:
+    image: prom/prometheus:latest
+    # context: ./src/prometheus
+    # dockerfile: dockerfile.prometheus
+    container_name: prometheus
     networks:
       redes:
         ipv4_address: 95.58.0.2
     ports:
-      - "8080:80"
-
-  servidor-assincrono:
-    build:
-      context: ./src/servidor_assincrono
-      dockerfile: dockerfile.assincrono
-    container_name: servidor-assincrono
-    networks:
-      redes:
-        ipv4_address: 95.58.0.3
-    ports:
-      - "8081:80"
-
-  client:
-    build: 
-      context: ./src/cliente
-      dockerfile: dockerfile.cliente
-    container_name: cliente
+      - "9090:9090"
     depends_on:
-      - servidor-sincrono
-      - servidor-assincrono
-    volumes:  
-      - ./graficos:/graficos
-      - ./src/cliente:/app
+      - nginx-exporter
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.retention.time=30d'
+    volumes:
+      - prometheus_data:/prometheus
+      - ./src/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest    
+    container_name: grafana
     networks:
       redes:
-        ipv4_address: 95.58.0.4
+        ipv4_address: '95.58.0.3'
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./src/grafana/dashboards:/var/lib/grafana/dashboards
+      - ./src/grafana/provisioning:/etc/grafana/provisioning
+
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    restart: unless-stopped
+
+
+  # client:
+  #   build: 
+  #     context: ./src/cliente
+  #     dockerfile: dockerfile.cliente
+  #   container_name: cliente
+  #   volumes:  
+  #     - ./graficos:/graficos
+  #     - ./src/cliente:/app
+  #   networks:
+  #     redes:
+  #       ipv4_address: 95.58.0.4
 
 networks:
   redes:
@@ -43,3 +113,7 @@ networks:
     ipam:
       config:
         - subnet: 95.58.0.0/24
+
+volumes:
+  grafana_data:
+  prometheus_data:

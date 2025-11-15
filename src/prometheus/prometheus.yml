@@ -1,11 +1,20 @@
 global:
   scrape_interval: 5s
   evaluation_interval: 5s
+  external_labels:
+    monitor: 'redes2-monitor'
+    aluno: 'Rayssa Alves'
+    matricula: '20239019558'
+
 
 scrape_configs:
   - job_name: 'prometheus'
     static_configs:
       - targets: ['localhost:9090']
+  
+  - job_name: 'nginx'
+    static_configs:
+      - targets: ['95.58.0.7:9113']
         labels:
-          aluno: 'Rayssa Alves'
-          matricula: '20239019558'
+          servidor: 'nginx'
+          tipo: 'servidor_web'

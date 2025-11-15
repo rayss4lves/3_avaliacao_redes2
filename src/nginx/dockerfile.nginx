@@ -1,11 +1,14 @@
-FROM nginx:3.11-alpine
+FROM ubuntu:22.04
 
-WORKDIR /app
+ENV DEBIAN_FRONTEND=noninteractive
 
-COPY ServidorNginx.py /app/ServidorNginx.py
+RUN apt-get update && \
+    apt-get install -y nginx && \
+    rm -rf /var/lib/apt/lists/*
 
-COPY html /app/html/
-# Expõe a porta 80
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY html/ /usr/share/nginx/html/
+
 EXPOSE 80
 
-CMD ["python3", "/app/ServidorNginx.py"]
+CMD ["nginx", "-g", "daemon off;"]
