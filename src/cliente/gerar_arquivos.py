@@ -6,8 +6,12 @@ def gerar_arquivo(caminho, nome, tamanho_kb):
         f.write('A' * 1024 * tamanho_kb)
 
 # Caminhos para NGINX e Apache
-caminho_nginx = "src/nginx/html"
-caminho_apache = "src/apache/html"
+# Diretório base do projeto (onde o script está salvo)
+base_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Caminhos corretos para NGINX e Apache dentro da pasta src já existente
+caminho_nginx = os.path.join(base_dir, "..", "nginx", "html")
+caminho_apache = os.path.join(base_dir, "..", "apache", "html")
 
 # Arquivos de teste
 gerar_arquivo(caminho_nginx, "arquivo_5kb.txt", 5)

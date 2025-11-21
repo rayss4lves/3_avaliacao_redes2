@@ -7,7 +7,7 @@ services:
     container_name: nginx
     networks:
       redes:
-        ipv4_address: 95.58.0.5
+        ipv4_address: 95.58.0.2
     ports:
       - "8080:80"
 
@@ -21,7 +21,7 @@ services:
     container_name: nginx_exporter
     networks:
       redes:
-        ipv4_address: 95.58.0.7
+        ipv4_address: 95.58.0.3
     ports:
       - "9113:9113"
     command:
@@ -36,7 +36,7 @@ services:
     container_name: apache_server
     networks:
       redes:
-        ipv4_address: 95.58.0.6
+        ipv4_address: 95.58.0.4
     ports:
       - "8082:80"
     volumes:
@@ -49,7 +49,7 @@ services:
     container_name: apache_exporter
     networks:
       redes:
-        ipv4_address: 95.58.0.8
+        ipv4_address: 95.58.0.5
     ports:
       - "9117:9117"
     command:
@@ -64,7 +64,7 @@ services:
     container_name: prometheus
     networks:
       redes:
-        ipv4_address: 95.58.0.2
+        ipv4_address: 95.58.0.6
     ports:
       - "9090:9090"
     depends_on:
@@ -83,7 +83,7 @@ services:
     container_name: grafana
     networks:
       redes:
-        ipv4_address: '95.58.0.3'
+        ipv4_address: '95.58.0.7'
     ports:
       - "3000:3000"
     volumes:
@@ -104,10 +104,15 @@ services:
     container_name: cliente
     volumes:  
       - ./graficos:/graficos
-      - ./src/cliente:/app
+      - ./src/cliente:/app/src/cliente
+    depends_on:
+      - nginx
+      - apache
+      - prometheus
+      - grafana
     networks:
       redes:
-        ipv4_address: 95.58.0.4
+        ipv4_address: 95.58.0.8
 
 networks:
   redes:

@@ -1,10 +1,12 @@
 import time
 import csv
-import concurrent.futures
-import threading
-from cliente.cliente import Cliente
+from concurrent.futures import as_completed, ThreadPoolExecutor
+from cliente import Cliente
 import requests
 import os
+
+NUM_THREADS = 2
+NUMERO_REQUISICOES = 200
 
 def consultar_prometheus(prometheus_url, query):
     try:
@@ -13,119 +15,144 @@ def consultar_prometheus(prometheus_url, query):
             params={"query": query},
             timeout=5
         )
-        data = resp.json()
-        return data["data"]["result"]
+        if resp.status_code == 200:
+            data = resp.json()
+            print( data )
+            return data["data"]["result"]
     except Exception as e:
         print("Erro ao consultar Prometheus:", e)
         return None
 
+PROMETHEUS_URL = "http://prometheus:9090"
 
-PROMETHEUS_URL = "http://95.58.0.6:9090"   # Ajuste para o IP do Prometheus
+def coletar_cpu(servidor):
+    if servidor == "nginx":
+        return consultar_prometheus(PROMETHEUS_URL, 
+            "rate(process_cpu_seconds_total_requisicoes{job='nginx'}[30s])")
+    else:
+        return consultar_prometheus(PROMETHEUS_URL, 
+            "rate(process_cpu_seconds_total_requisicoes{job='apache'}[30s])")
 
+def coletar_metricas_prometheus(nome):
+    cpu = coletar_cpu(nome)
+    
+    if cpu and len(cpu) > 0:
+        cpu = float(cpu[0]['value'][1])
+    else:
+        cpu = 0.0
+    return cpu
 
 def executar_requisicao(host, porta, caminho):
-    cliente = Cliente(host, porta)
-    sucesso, tempo, status, _ = cliente.enviar_requisicao("GET", caminho)
-    return sucesso
+    try:
+        cliente = Cliente(host, porta)
+        resultado = cliente.enviar_requisicao("GET", caminho)
+        return {
+            'servidor': host,
+            'sucesso': resultado.get('sucesso', False),
+            'tempo_total': resultado.get('tempo_total', 0),
+            'codigo_status': resultado.get('codigo_status', 0)
+        }
+    except Exception as e:
+        print(f"Erro ao executar requisição: {e}")
+        return {
+            'servidor': host,
+            'sucesso': False,
+            'tempo_total': 0,
+            'codigo_status': 0
+        }
 
-
-def stress(host, porta, caminho, total, concorrencia):
-    with concurrent.futures.ThreadPoolExecutor(max_workers=concorrencia) as executor:
+def stress(servidor, host, porta, caminho):
+    resultados = []
+    tempo_inicio = time.time()
+    
+    with ThreadPoolExecutor(max_workers=NUM_THREADS) as executor:
         futures = [
             executor.submit(executar_requisicao, host, porta, caminho)
-            for _ in range(total)
+            for _ in range(NUMERO_REQUISICOES)
         ]
-        resultados = [f.result() for f in concurrent.futures.as_completed(futures)]
-
-    return resultados.count(True), resultados.count(False)
-
-
-def coletar_metricas_nginx():
-    return {
-        "req_total": consultar_prometheus(PROMETHEUS_URL, "nginx_http_requests_total"),
-        "latencia_sum": consultar_prometheus(PROMETHEUS_URL, "nginx_http_requests_duration_seconds_sum"),
-        "latencia_count": consultar_prometheus(PROMETHEUS_URL, "nginx_http_requests_duration_seconds_count")
-    }
-
-
-def coletar_metricas_apache():
-    return {
-        "req_total": consultar_prometheus(PROMETHEUS_URL, "apache_accesses_total"),
-        "conexoes": consultar_prometheus(PROMETHEUS_URL, "apache_connections_total"),
-        "cpu_user": consultar_prometheus(PROMETHEUS_URL, "apache_cpu_user_seconds_total")
-    }
-
-
-def executar_teste_prometheus(nome, host, porta, caminho="/", total=200, concorrencia=20):
-    print(f"\n===== TESTE {nome.upper()} =====")
-
-    # Metricas antes
-    if nome == "nginx":
-        antes = coletar_metricas_nginx()
+        
+        for futuro in as_completed(futures):
+            try:
+                resultado = futuro.result()
+                resultados.append(resultado)
+            except Exception as e:
+                print("Erro na requisição:", e)
+                resultados.append({
+                    "sucesso": False,
+                    "tempo_total": 0,
+                    "codigo_status": 0
+                })
+    
+    tempo_fim = time.time()
+    tempo_total = tempo_fim - tempo_inicio
+    
+    # CORREÇÃO 1: sucessos é int, não lista
+    sucessos = sum(1 for r in resultados if r.get('sucesso', False))
+    falhas = len(resultados) - sucessos  # CORRETO: subtrair int de int
+    
+    # CORREÇÃO 2: só pegar tempos de requisições bem-sucedidas
+    tempos = [r['tempo_total'] * 1000 for r in resultados 
+              if r.get('sucesso', False) and r.get('tempo_total', 0) > 0]
+    
+    cpu = coletar_metricas_prometheus(servidor)
+    
+    # CORREÇÃO 3: inicializar variáveis mesmo se tempos estiver vazio
+    if tempos:
+        latencia_media = sum(tempos) / len(tempos)
+        rps = len(tempos) / tempo_total
     else:
-        antes = coletar_metricas_apache()
-
-    # Executa o stress
-    sucesso, erros = stress(host, porta, caminho, total, concorrencia)
-    print(f"Sucesso: {sucesso} | Erros: {erros}")
-
-    # Metricas depois
-    if nome == "nginx":
-        depois = coletar_metricas_nginx()
-    else:
-        depois = coletar_metricas_apache()
-
+        latencia_media = 0
+        rps = 0
+    
     return {
-        "servidor": nome,
-        "sucesso": sucesso,
-        "erros": erros,
-        "metricas_antes": antes,
-        "metricas_depois": depois
+        "servidor": servidor,
+        "caminho": caminho,
+        "total_requisicoes": NUMERO_REQUISICOES,
+        "numero_threads": NUM_THREADS,
+        "sucesso": sucessos,
+        "erros": falhas,
+        "tempo_total": tempo_total,
+        "cpu": cpu,
+        "latencia_media": latencia_media,
+        "rps": rps
     }
 
-
-def salvar_execucoes_csv(resultados, nome_servidor, arquivo="resultados/metricas_prometheus.csv"):
-    os.makedirs(os.path.dirname(arquivo) if os.path.dirname(arquivo) else '.', exist_ok=True)
-    with open("metricas_prometheus.csv", "w", newline="") as f:
-        writer = csv.writer(f)
-        writer.writerow(["servidor", "sucesso", "erros", "metricas_antes", "metricas_depois"])
-
-        for r in resultados:
-            writer.writerow([
-                r["servidor"],
-                r["sucesso"],
-                r["erros"],
-                r["metricas_antes"],
-                r["metricas_depois"]
-            ])
-
+def salvar_execucoes_csv(dados, arquivo="resultados/metricas_prometheus.csv"):
+    os.makedirs(os.path.dirname(arquivo) if os.path.dirname(arquivo) else '.', 
+                exist_ok=True)
+    novo_arquivo = not os.path.exists(arquivo)
+    
+    with open(arquivo, "a", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=dados.keys())
+        if novo_arquivo:
+            writer.writeheader()
+        writer.writerow(dados)
 
 if __name__ == "__main__":
-    
     CENARIOS = [
-        ("/arquivo_5kb.txt", 200, 20),
-        ("/arquivo_500kb.txt", 200, 20),
-        ("/arquivo_5mb.txt", 100, 10),
-]
-
-    resultados = []
-
-    # Testes NGINX
-    for caminho, total, concorrencia in CENARIOS:
-        nginx = executar_teste_prometheus("nginx", "54.99.0.10", 80, caminho, total, concorrencia)
-        resultados.append(nginx)
-
-    # Testes Apache
-    for caminho, total, concorrencia in CENARIOS:
-        apache = executar_teste_prometheus("apache", "54.99.0.11", 80, caminho, total, concorrencia)
-        resultados.append(apache)
-
-    salvar_csv(resultados)
-    print("\nMetricas salvas em metricas_prometheus.csv")
-
-    nginx = executar_teste_prometheus("nginx", "54.99.0.10", 80)
-    apache = executar_teste_prometheus("apache", "54.99.0.11", 80)
-
-    salvar_csv([nginx, apache])
-
+        "/arquivo_5kb.txt",
+        "/arquivo_500kb.txt",
+        "/arquivo_5mb.txt",
+    ]
+    
+    print("=== Testes NGINX ===")
+    for caminho in CENARIOS:
+        print(f"Coletando metricas para NGINX - Caminho: {caminho}")
+        try:
+            # Porta 8080 mapeada para nginx (localhost do Windows)
+            nginx = stress("nginx", "95.58.0.2", 80, caminho)
+            salvar_execucoes_csv(nginx, arquivo="resultados/metricas_prometheus.csv")
+        except Exception as e:
+            print(f"Erro no teste NGINX: {e}")
+    
+    print("\n=== Testes Apache ===")
+    for caminho in CENARIOS:
+        print(f"Coletando metricas para Apache - Caminho: {caminho}")
+        try:
+            # Porta 8082 mapeada para apache (localhost do Windows)
+            apache = stress("apache", "95.58.0.4", 80, caminho)
+            salvar_execucoes_csv(apache, arquivo="resultados/metricas_prometheus.csv")
+        except Exception as e:
+            print(f"Erro no teste Apache: {e}")
+    
     print("\nMetricas salvas em metricas_prometheus.csv")
