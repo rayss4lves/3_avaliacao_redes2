@@ -14,10 +14,12 @@ caminho_nginx = os.path.join(base_dir, "..", "nginx", "html")
 caminho_apache = os.path.join(base_dir, "..", "apache", "html")
 
 # Arquivos de teste
-gerar_arquivo(caminho_nginx, "arquivo_5kb.txt", 5)
-gerar_arquivo(caminho_nginx, "arquivo_5mb.txt", 5 * 1024)
+gerar_arquivo(caminho_nginx, "arquivo_10kb.txt", 10)
+gerar_arquivo(caminho_nginx, "arquivo_1mb.txt", 1024)
+gerar_arquivo(caminho_nginx, "arquivo_10mb.txt", 10 * 1024)
 
-gerar_arquivo(caminho_apache, "arquivo_5kb.txt", 5)
-gerar_arquivo(caminho_apache, "arquivo_5mb.txt", 5 * 1024)
+gerar_arquivo(caminho_apache, "arquivo_10kb.txt", 10)
+gerar_arquivo(caminho_apache, "arquivo_1mb.txt", 1024)
+gerar_arquivo(caminho_apache, "arquivo_10mb.txt", 10 * 1024)
 
 print("Arquivos gerados em src/nginx/html e src/apache/html")

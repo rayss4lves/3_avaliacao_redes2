@@ -4,6 +4,17 @@ FROM httpd:latest
 # Define diretório de trabalho
 WORKDIR /usr/local/apache2
 
+#instalar o wget
+RUN apt-get update && \
+    apt-get install -y wget tar ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN wget https://github.com/prometheus/node_exporter/releases/download/v1.8.2/node_exporter-1.8.2.linux-amd64.tar.gz && \
+    tar xzf node_exporter-1.8.2.linux-amd64.tar.gz && \
+    mv node_exporter-1.8.2.linux-amd64/node_exporter /usr/local/bin/ && \
+    rm -rf node_exporter-1.8.2.linux-amd64* && \
+    chmod +x /usr/local/bin/node_exporter
+
 # Copia os arquivos HTML para o DocumentRoot
 COPY html/ /usr/local/apache2/htdocs/
 
@@ -11,4 +22,7 @@ COPY html/ /usr/local/apache2/htdocs/
 COPY httpd.conf /usr/local/apache2/conf/httpd.conf
 
 # Expõe a porta padrão do Apache
-EXPOSE 80
+EXPOSE 80 9100
+
+CMD ["sh", "-c", "node_exporter & httpd-foreground"]
+

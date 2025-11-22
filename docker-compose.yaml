@@ -10,6 +10,7 @@ services:
         ipv4_address: 95.58.0.2
     ports:
       - "8080:80"
+      - "9101:9100"
 
     volumes:
       - ./src/nginx/html:/usr/share/nginx/html:ro
@@ -25,7 +26,7 @@ services:
     ports:
       - "9113:9113"
     command:
-      - '--nginx.scrape-uri=http://95.58.0.5/basic_status'
+      - '--nginx.scrape-uri=http://95.58.0.2/basic_status'
     depends_on:
       - nginx
 
@@ -39,9 +40,10 @@ services:
         ipv4_address: 95.58.0.4
     ports:
       - "8082:80"
+      - "9100:9100"
     volumes:
-      - ./src/apache/html:/usr/share/apache2/html:ro
-      - ./src/apache/httpd.conf:/etc/apache2/apache2.conf:ro
+      - ./src/apache/html:/usr/local/apache2/htdocs:ro
+      - ./src/apache/httpd.conf:/usr/local/apache2/conf/httpd.conf:ro
     
   
   apache-exporter:
@@ -53,7 +55,7 @@ services:
     ports:
       - "9117:9117"
     command:
-      - '--scrape_uri=http://95.58.0.6/apache-status?auto'
+      - '--scrape_uri=http://95.58.0.4/apache-status?auto'
     depends_on:
       - apache
 
@@ -105,6 +107,7 @@ services:
     volumes:  
       - ./graficos:/graficos
       - ./src/cliente:/app/src/cliente
+      - ./src/cliente/resultados:/app/resultados
     depends_on:
       - nginx
       - apache

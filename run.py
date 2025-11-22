@@ -3,6 +3,7 @@
 
 import subprocess
 import sys
+from src.cliente.gerar_arquivos import gerar_arquivo
 
 def menu():
     print("\n=== MENU ===")
@@ -35,6 +36,7 @@ def parar():
 def logs():
     print("\n[+] Mostrando logs...")
     subprocess.run(['docker-compose', 'logs', '--tail=50'])
+
 
 if __name__ == '__main__':
     # Se passar argumento direto
