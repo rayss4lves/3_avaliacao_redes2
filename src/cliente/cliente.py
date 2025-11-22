@@ -43,7 +43,7 @@ class Cliente():
     # Ela usa o X-Custom-ID no cabecalho da requisicao
     def enviar_requisicao(self, metodo='GET', caminho = '/', corpo=None):
         tempo_inicial = time.time()
-        
+        resultado = {}
         try:
             
             client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -77,7 +77,7 @@ class Cliente():
             resposta_status = resposta.decode(errors='ignore')
             cod_status = 0
             
-            if resposta_status.startswith('HTTP/1.1'):
+            if resposta_status.startswith('HTTP/'):
                 try:
                     cod_status = int(resposta_status.split(' ')[1])
                 except:
@@ -86,7 +86,7 @@ class Cliente():
             custom_id_recebido = cabecalhos_recebidos.get('X-Custom-ID', None)
             custom_id_esperado = X_CUSTOM_ID
             
-            return {
+            resultado = {
                     'codigo_status': cod_status,
                     'tempo_total': tempo_total,
                     'cabecalhos': cabecalhos_recebidos,
@@ -96,12 +96,16 @@ class Cliente():
             }
         except Exception as e:
             print(f'Error: {e}')
-            return {
+            resultado = {
                 'codigo_status': 0,
-                'tempo_total': tempo_total,
+                'tempo_total': 0,
                 'cabecalhos': {},
                 'sucesso':False,
                 'erro': str(e)
             }
+        finally:
+            if client_socket:
+                client_socket.close()   
+        return resultado
         
 

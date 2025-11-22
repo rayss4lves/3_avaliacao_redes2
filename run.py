@@ -1,9 +1,5 @@
-#!/usr/bin/env python3
-"""Script simples para gerenciar o projeto"""
-
 import subprocess
-import sys
-from src.cliente.gerar_arquivos import gerar_arquivo
+import src.cliente.gerar_arquivos
 
 def menu():
     print("\n=== MENU ===")
@@ -15,44 +11,30 @@ def menu():
     return input("\nEscolha: ")
 
 def iniciar():
-    print("\n[+] Iniciando containers...")
+    print("\nIniciando containers...")
     subprocess.run(['docker-compose', 'up', '-d', '--build'])
-    print("\n✓ Containers iniciados!")
-    print("  - Nginx:      http://localhost:8080")
-    print("  - Apache:     http://localhost:8082")
+    print("\n Containers iniciados!")
+    print("  - Nginx:      http://95.58.0.2:8080")
+    print("  - Apache:     http://95.58.0.4:8082")
     print("  - Prometheus: http://localhost:9090")
     print("  - Grafana:    http://localhost:3000")
 
 def executar_testes():
-    print("\n[+] Executando testes...")
+    print("\nExecutando testes...")
     subprocess.run(['docker-compose', 'exec', 'client', 'python', '/app/src/cliente/testes.py'])
-    print("\n✓ Testes concluídos!")
+    print("\nTestes concluídos!")
 
 def parar():
-    print("\n[+] Parando containers...")
+    print("\nParando containers...")
     subprocess.run(['docker-compose', 'down'])
-    print("✓ Containers parados!")
+    print("Containers parados!")
 
 def logs():
-    print("\n[+] Mostrando logs...")
+    print("\nMostrando logs...")
     subprocess.run(['docker-compose', 'logs', '--tail=50'])
 
 
 if __name__ == '__main__':
-    # Se passar argumento direto
-    if len(sys.argv) > 1:
-        comando = sys.argv[1]
-        if comando == 'iniciar':
-            iniciar()
-        elif comando == 'testes':
-            executar_testes()
-        elif comando == 'parar':
-            parar()
-        elif comando == 'logs':
-            logs()
-        else:
-            print("Comandos: iniciar, testes, parar, logs")
-        sys.exit(0)
     
     # Menu interativo
     while True:
@@ -70,4 +52,4 @@ if __name__ == '__main__':
             print("Saindo...")
             break
         else:
-            print("Opção inválida!")
+            print("Opção invalida!")

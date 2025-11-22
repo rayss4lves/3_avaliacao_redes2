@@ -28,14 +28,11 @@ scrape_configs:
 
   - job_name: 'nginx_node'
     static_configs:
-      - targets: ['95.58.0.2:9100']   # Porta exposta no docker-compose
+      - targets: ['95.58.0.2:9100']  
         labels:
           servidor: 'nginx'
           tipo: 'recursos_container'
 
-  # ============================
-  # 🔥 APACHE - NODE EXPORTER
-  # ============================
   - job_name: 'apache_node'
     static_configs:
       - targets: ['95.58.0.4:9100']
