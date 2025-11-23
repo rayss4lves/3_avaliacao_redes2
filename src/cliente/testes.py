@@ -80,11 +80,11 @@ def executar_requisicao(host, porta, caminho):
         }
     return resultado_dict
 
-def stress(servidor, host, porta, caminho, execucao):
+def stress(servidor, host, porta, caminho, execucao, num_threads):
     resultados = []
     tempo_inicio = time.time()
     
-    with ThreadPoolExecutor(max_workers=NUM_THREADS) as executor:
+    with ThreadPoolExecutor(max_workers=num_threads) as executor:
         futures = []
         for _ in range(NUMERO_REQUISICOES):
             future = executor.submit(executar_requisicao, host, porta, caminho)
@@ -138,7 +138,7 @@ def stress(servidor, host, porta, caminho, execucao):
         "caminho": caminho,
         "Execucao": execucao,
         "total_requisicoes": NUMERO_REQUISICOES,
-        "numero_threads": NUM_THREADS,
+        "numero_threads": num_threads,
         "sucesso": sucessos,
         "erros": falhas,
         "tempo_total": tempo_total,
@@ -177,11 +177,11 @@ if __name__ == "__main__":
         resultados_nginx[chave] = []
         resultados_apache[chave] = []
         for i in range(NUM_EXECUCOES):
-            NUM_THREADS = cenario["threads"]
-            nginx = stress("nginx", "95.58.0.2", 80, cenario["caminho"], i)
+            num_threads = cenario["threads"]
+            nginx = stress("nginx", "95.58.0.2", 80, cenario["caminho"], i, num_threads)
             resultados_nginx[chave].append(nginx)
             
-            apache = stress("apache", "95.58.0.4", 80, cenario["caminho"], i)
+            apache = stress("apache", "95.58.0.4", 80, cenario["caminho"], i, num_threads)
             resultados_apache[chave].append(apache)
                         
     # salvar resultados

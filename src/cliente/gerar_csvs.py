@@ -9,23 +9,23 @@ def calcular_medias_por_cenario(resultados):
     medias = {}
     for cenario, execucoes in resultados.items():
         medias[cenario] = {}
-        # pega todas as chaves numéricas
+        # pega todas as chaves numericas
         for chave in execucoes[0].keys():
             if chave not in campos_ignorar:
                 valores = [e[chave] for e in execucoes if isinstance(e[chave], (int, float))]
-                if valores:  # só calcula se houver números
+                if valores:  # so calcula se houver números
                     medias[cenario][chave] = np.mean(valores)
     return medias
 
 def salvar_execucoes_csv(resultados, arquivo="resultados/metricas_prometheus.csv"):
-    # resultados é um dict: { "cenario": [ {execução}, {execução}, ... ] }
+    # resultados e um dict: { "cenario": [ {execução}, {execução}, ... ] }
     os.makedirs(os.path.dirname(arquivo) or ".", exist_ok=True)
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     with open(arquivo, "w", newline="", encoding="utf-8") as f:
         writer = None
         for cenario, execucoes in resultados.items():
             for execucao in execucoes:
-                # inicializa o writer só uma vez, com as chaves + campo 'cenario'
+                # inicializa o writer so uma vez, com as chaves + campo 'cenario'
                 if writer is None:
                     campos = ["timestamp", "cenario"] + list(execucao.keys())
                     writer = csv.DictWriter(f, fieldnames=campos)
@@ -36,7 +36,7 @@ def salvar_execucoes_csv(resultados, arquivo="resultados/metricas_prometheus.csv
                 writer.writerow(linha)
 
 def salvar_medias_csv(medias, arquivo="resultados/medias.csv"):
-    # Garante que o diretório existe
+    # Garante que o diretorio existe
     os.makedirs(os.path.dirname(arquivo) or ".", exist_ok=True)
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     # Pega os campos do primeiro cenário + adiciona 'cenario'
