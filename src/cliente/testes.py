@@ -31,7 +31,9 @@ def coletar_cpu(servidor):
         instance="95.58.0.2:9100"
     else:
         instance="95.58.0.4:9100"
-    query = f'100 - (avg(rate(node_cpu_seconds_total{{mode="idle", instance="{instance}"}}[5m])) * 100)'
+        
+    query = f'(1 - avg(rate(node_cpu_seconds_total{{mode="idle", instance="{instance}"}}[1m]))) * 100'
+
     return consultar_prometheus(PROMETHEUS_URL, query)
 
 def coletar_memoria(servidor):

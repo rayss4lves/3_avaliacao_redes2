@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 2,
+  "id": 9,
   "links": [],
   "panels": [
     {
@@ -80,32 +80,7 @@
             ]
           }
         },
-        "overrides": [
-          {
-            "__systemRef": "hideSeriesFrom",
-            "matcher": {
-              "id": "byNames",
-              "options": {
-                "mode": "exclude",
-                "names": [
-                  "{__name__=\"process_cpu_seconds_total\", instance=\"95.58.0.7:9113\", job=\"nginx\", servidor=\"nginx\", tipo=\"servidor_web\"}"
-                ],
-                "prefix": "All except:",
-                "readOnly": true
-              }
-            },
-            "properties": [
-              {
-                "id": "custom.hideFrom",
-                "value": {
-                  "legend": false,
-                  "tooltip": true,
-                  "viz": true
-                }
-              }
-            ]
-          }
-        ]
+        "overrides": []
       },
       "gridPos": {
         "h": 8,
@@ -134,11 +109,24 @@
             "type": "prometheus",
             "uid": "df47hhqn9uyo0f"
           },
-          "editorMode": "builder",
-          "expr": "process_cpu_seconds_total",
+          "editorMode": "code",
+          "expr": "avg(process_resident_memory_bytes{job=\"nginx_node\"}) / (1024*1024)",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "df47hhqn9uyo0f"
+          },
+          "editorMode": "code",
+          "expr": "avg(process_resident_memory_bytes{job=\"apache_node\"}) / (1024*1024)",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "B"
         }
       ],
       "title": "New panel",
@@ -152,12 +140,12 @@
     "list": []
   },
   "time": {
-    "from": "now-6h",
+    "from": "now-5m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "browser",
-  "title": "cpu",
-  "uid": "adr8trx",
+  "title": "memoria_dashboard",
+  "uid": "adxwg8l",
   "version": 1
 }
