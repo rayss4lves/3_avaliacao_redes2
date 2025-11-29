@@ -36,7 +36,7 @@ Este projeto tem como objetivo configurar, testar e comparar o desempenho de doi
 │   │   └── dockerfile.cliente         # Dockerfile do cliente
 │   ├── grafana/                       # Configuração do Grafana
 │   │   ├── dashboards/                # Dashboards personalizados
-│   │   └── provisioning/              # Provisionamento automático
+│   │   └── provisioning/              
 │   ├── nginx/                         # Servidor Nginx
 │   │   ├── html/                      # Arquivos HTML e TXT para os testes
 │   │   ├── dockerfile.nginx           # Dockerfile do Nginx
@@ -45,7 +45,8 @@ Este projeto tem como objetivo configurar, testar e comparar o desempenho de doi
 │   │   └── prometheus.yml
 ├── run.py                             # Arquivo de execução do trabalho          
 ├── docker-compose.yaml                # Orquestração dos containers 
-└── Avaliacao Redes 2 2025-2.pdf       # Especificação do trabalho
+├── Avaliacao Redes 2 2025-2.pdf       # Especificação do trabalho
+└── relatorio.pdf                      # Relatório do trabalho
 
 ```
 
