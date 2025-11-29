@@ -5,7 +5,7 @@
 - **Autor**: Rayssa dos Santos Alves
 - **Matrícula**: 20239019558
 - **Entrega**: 28/11/2025
-- [Link para o vídeo do YouTube](https://youtu.be/xNRojXApG2g))
+- [Link para o vídeo do YouTube](https://youtu.be/xNRojXApG2g)]
 
 ## Avaliação Comparativa de Servidores Web com Docker, Prometheus e Grafana
 
