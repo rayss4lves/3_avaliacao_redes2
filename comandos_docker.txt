@@ -1,5 +1,0 @@
-executar o container
-docker compose up --build
-
-parar o container
-docker compose down
